@@ -25,23 +25,6 @@ export default function DetailsScreen({ navigation }) {
   const [tieude, settieude] = React.useState("");
   const [ghichu, setghichu] = React.useState("");
 
-  // const postdata = () => {
-  //   fetch("http://192.168.1.233:3000/insert_new_foods", {
-  //     method: "POST",
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       name: route.params?.post,
-  //       key: route.params?.post1,
-  //       imageUrl: route.params?.date,
-  //     }),
-  //   });
-  //   setLoading(route.params?.refesh);
-  //   console.log(isLoading);
-  // };
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -128,10 +111,6 @@ export default function DetailsScreen({ navigation }) {
                 refesh: true,
               });
             }}
-            // onPress={() => {
-            //   navigation.navigate("HomeScreen");
-            //   postdata
-            // }}
           />
         </View>
       </ScrollView>

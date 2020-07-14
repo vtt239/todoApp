@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import {
   Text,
   StyleSheet,
@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  Alert,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -24,23 +25,7 @@ export default function DetailsScreen({ navigation }) {
   const [show, setShow] = useState(true);
   const [tieude, settieude] = React.useState("");
   const [ghichu, setghichu] = React.useState("");
-
-  // const postdata = () => {
-  //   fetch("http://192.168.1.233:3000/insert_new_foods", {
-  //     method: "POST",
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       name: route.params?.post,
-  //       key: route.params?.post1,
-  //       imageUrl: route.params?.date,
-  //     }),
-  //   });
-  //   setLoading(route.params?.refesh);
-  //   console.log(isLoading);
-  // };
+  const [add, setAdd] = useState(false);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -65,6 +50,30 @@ export default function DetailsScreen({ navigation }) {
     return `${date.getHours()}h:${date.getMinutes()} Ngày ${date.getDate()}/${
       date.getMonth() + 1
     }/${date.getFullYear()}`;
+  };
+
+  useEffect(() => {
+    if (add === true) {
+      navigation.navigate("HomeScreen");
+    }
+  }, [add]);
+
+  const postData = () => {
+    fetch("http://192.168.100.19:3000/insert_new_foods", {
+      //192.168.100.19
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: tieude,
+        key: ghichu,
+        imageUrl: formatDate(date),
+      }),
+    });
+    setghichu("");
+    settieude("");
   };
 
   return (
@@ -110,28 +119,13 @@ export default function DetailsScreen({ navigation }) {
             <Button onPress={showTimepicker} title="Chọn giờ nhắc" />
           </View>
         </View>
-        <View
-          style={{
-            backgroundColor: "skyblue",
-            borderRadius: 10,
-            marginHorizontal: 100,
-            marginTop: 20,
-          }}
-        >
+        <View style={styles.btnAdd}>
           <Button
             title="Add"
             onPress={() => {
-              navigation.navigate("HomeScreen", {
-                post: tieude,
-                post1: ghichu,
-                date: formatDate(date),
-                refesh: true,
-              });
+              postData();
+              setAdd(true);
             }}
-            // onPress={() => {
-            //   navigation.navigate("HomeScreen");
-            //   postdata
-            // }}
           />
         </View>
       </ScrollView>
@@ -149,5 +143,11 @@ const styles = StyleSheet.create({
   tg: {
     fontSize: 24,
     marginLeft: 20,
+  },
+  btnAdd: {
+    backgroundColor: "skyblue",
+    borderRadius: 10,
+    marginHorizontal: 100,
+    marginTop: 20,
   },
 });

@@ -62,10 +62,10 @@ export default function Login({ navigation }) {
           }}
         >
           <View style={styles.LogoView}>
-            <Image
+            {/* <Image
               style={{ width: 100, height: 100 }}
               source={require("../img/login.png")}
-            />
+            /> */}
             <Text style={{ fontWeight: "bold", fontSize: 24 }}>app0001</Text>
           </View>
         </TouchableOpacity>

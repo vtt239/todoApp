@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { Component, useState,useEffect } from "react";
+import React, { Component, useState, useEffect } from "react";
 import {
   Text,
   StyleSheet,
@@ -16,7 +16,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import dismissKeyboard from "react-native/Libraries/Utilities/dismissKeyboard";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function DetailsScreen({ navigation, route }) {
+export default function Edit({ navigation, route }) {
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(true);
@@ -26,7 +26,6 @@ export default function DetailsScreen({ navigation, route }) {
   const [datee, setDatee] = useState(route.params?.postDate);
   const [id, setID] = useState(route.params?.postID);
   const [edit, setEdit] = useState(false);
-
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -54,15 +53,15 @@ export default function DetailsScreen({ navigation, route }) {
   };
 
   useEffect(() => {
-    if(edit === true){
-      navigation.navigate("HomeScreen")
+    if (edit === true) {
+      navigation.navigate("HomeScreen", { refesh: true });
     }
   }, [edit]);
 
+  //console.log(edit)
 
-  console.log(edit)
   const EditTodo = (id, tieude, ghichu, date) => {
-    fetch("http://192.168.1.233:3000/update_a_food", {
+    fetch("http://192.168.100.19:3000/update_a_food", {
       //192.168.100.19
       method: "PUT",
       headers: {
@@ -76,14 +75,13 @@ export default function DetailsScreen({ navigation, route }) {
         imageUrl: formatDate(date),
       }),
     });
-
   };
 
   return (
     // eslint-disable-next-line react-native/no-inline-styles
     <View>
       <Text style={{ fontSize: 30, fontWeight: "bold", marginLeft: 5 }}>
-        Chi Tiết Lời Nhắc:{" "}
+        Chỉnh Sửa Lời Nhắc:{" "}
       </Text>
       <ScrollView>
         <View style={styles.boxInput}>
@@ -122,24 +120,14 @@ export default function DetailsScreen({ navigation, route }) {
             <Button onPress={showTimepicker} title="Chọn giờ nhắc" />
           </View>
         </View>
-        <View
-          style={{
-            backgroundColor: "green",
-            borderRadius: 10,
-            marginHorizontal: 100,
-            marginTop: 20,
-          }}
-        >
+        <View style={styles.btEdit}>
           <Button
             title="Edit"
             color="black"
-            onPress={
-              () => {
-                EditTodo(id, tieude, ghichu, date);
-                setEdit(true);
-              }
-            
-            }
+            onPress={() => {
+              EditTodo(id, tieude, ghichu, date);
+              setEdit(true);
+            }}
           />
         </View>
       </ScrollView>
@@ -147,6 +135,12 @@ export default function DetailsScreen({ navigation, route }) {
   );
 }
 const styles = StyleSheet.create({
+  btEdit: {
+    backgroundColor: "green",
+    borderRadius: 10,
+    marginHorizontal: 100,
+    marginTop: 20,
+  },
   boxInput: {
     flexDirection: "column",
     padding: 20,

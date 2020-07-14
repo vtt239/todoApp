@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 
-import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import HomeScreen from "../screens/Home";
+import DetailsScreen from "../screens/DetailsScreen";
+import Edit from "../screens/Edit";
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Home';
@@ -15,24 +15,56 @@ export default function BottomTabNavigator({ navigation, route }) {
   navigation.setOptions({ headerTitle: getHeaderTitle(route) });
 
   return (
-    <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
-      <BottomTab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          title: 'Get Started',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="ios-home" />,
-        }}
-      />
-      <BottomTab.Screen
-        name="Links"
-        component={LinksScreen}
-        options={{
-          title: 'Resources',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="ios-settings" />,
-        }}
-      />
-    </BottomTab.Navigator>
+    <BottomTab.Navigator>
+          <BottomTab.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{
+              title: "Home",
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} name="ios-home" />
+              ),
+            }}
+          />
+          <BottomTab.Screen
+            name="DetailsScreen"
+            component={DetailsScreen}
+            options={{
+              title: "DetailsScreen",
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} name="ios-calendar" />
+              ),
+            }}
+          />
+          <BottomTab.Screen
+            name="Edit"
+            component={Edit}
+            options={{
+              title: "Edit",
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} name="md-checkmark-circle-outline" />
+              ),
+            }}
+          />
+        </BottomTab.Navigator>
+    // <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+    //   <BottomTab.Screen
+    //     name="Home"
+    //     component={HomeScreen}
+    //     options={{
+    //       title: 'Get Started',
+    //       tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="ios-home" />,
+    //     }}
+    //   />
+    //   <BottomTab.Screen
+    //     name="Links"
+    //     component={LinksScreen}
+    //     options={{
+    //       title: 'Resources',
+    //       tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="ios-settings" />,
+    //     }}
+    //   />
+    // </BottomTab.Navigator>
   );
 }
 

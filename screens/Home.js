@@ -8,13 +8,16 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Switch,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { TextInput, ScrollView } from "react-native-gesture-handler";
 import DateTimePicker from "@react-native-community/datetimepicker";
 //import CalendarPicker from 'react-native-calendar-picker';
+
+import { RadioButton } from "react-native-paper";
 
 let id = 0;
 
@@ -23,34 +26,59 @@ export default function HomeScreen({ navigation, route }) {
   const [datas, setData] = useState([]);
   const [todos, setTodos] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [checked, setChecked] = useState(false);
+
+  const TodoItem = (props) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          //setLoading(true);
+          navigation.navigate("Edit", {
+            postID: props._id,
+            postTd: props.name,
+            postGc: props.key,
+            postDate: props.imageUrl,
+          });
+        }}
+      >
+        <View style={styles.cntext}>
+          {/* <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={props.checked ? "#f5dd4b" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch1}
+            value={props.checked}
+            style={{ marginTop: 15 }}
+          /> */}
+          <View style={styles.tt}>
+            <Text style={styles.td}>Tiêu Đề: {props.name}</Text>
+            <Text style={styles.gc}>Ghi chú: {props.key}</Text>
+            <Text style={styles.gc}>Lúc: {props.imageUrl}</Text>
+          </View>
+          <View style={{ marginTop: 15, marginLeft: 5 }}>
+            <Button
+              title="Delete"
+              color="red"
+              onPress={() => deleteData(props._id)}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const toggleSwitch1 = () => setChecked((previousState) => !previousState);
+
   useEffect(() => {
-    fetch("http://192.168.1.233:3000/list_all_foods") //192.168.100.19
+    fetch("http://192.168.100.19:3000/list_all_foods") //192.168.100.19
       .then((response) => response.json())
       .then((json) => setData(json.data))
       .catch((error) => console.error(error))
-      .finally(() => setLoading(false))
+      .finally(() => setLoading(false));
   }, [isLoading]);
 
-  const postdata = () => {
-    fetch("http://192.168.1.233:3000/insert_new_foods", {
-      //192.168.100.19
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: route.params?.post,
-        key: route.params?.post1,
-        imageUrl: route.params?.date,
-      }),
-    });
-    setLoading(route.params?.refesh);
-    console.log(isLoading);
-  };
-
-  const DeleteData = (id) => {
-    fetch("http://192.168.1.233:3000/delete_a_food", {
+  const deleteData = (id) => {
+    fetch("http://192.168.100.19:3000/delete_a_food", {
       //192.168.100.19
       method: "DELETE",
       headers: {
@@ -65,11 +93,8 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   const onRefresh = React.useCallback(() => {
-    setLoading(true)
+    setLoading(true);
   }, []);
-
-  // console.log(datas);
-  // console.log(isLoading);
 
   const formatDate = (date) => {
     return `${date.getHours()}h:${date.getMinutes()} Ngày ${date.getDate()}/${
@@ -77,79 +102,53 @@ export default function HomeScreen({ navigation, route }) {
     }/${date.getFullYear()}`;
   };
 
-  const addTodo = () => {
-    id++;
-
-    setTodos([
-      ...todos,
-      {
-        key: id,
-        td: route.params?.post,
-        gt: route.params?.post1,
-        date: route.params?.date,
+  const toggleSwitch = (id, ghichu, tieude, date, checked) => {
+    fetch("http://192.168.100.19:3000/update_a_food", {
+      //192.168.100.19
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-    ]);
+      body: JSON.stringify({
+        food_id: id,
+        checked: !checked,
+        key: ghichu,
+        name: tieude,
+        imageUrl: date,
+      }),
+    });
   };
-
-  const deleteTodo = (key) => {
-    setTodos(todos.filter((todo) => todo.key !== key));
-  };
-
   return (
     // eslint-disable-next-line react-native/no-inline-styles
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View
-          style={{
-            backgroundColor: "skyblue",
-            borderRadius: 15,
-            //marginHorizontal: 150,
-            marginTop: 20,
-            marginLeft: 40,
-            width: 100,
-          }}
-        >
+      <View style={{ flexDirection: "row" }}>
+        <View style={styles.btCreate}>
           <Button
             title="Create"
             onPress={() => {
               navigation.navigate("DetailsScreen");
-              //setLoading(true);
+              onRefresh();
             }}
           />
         </View>
-        <View
-          style={{
-            backgroundColor: "skyblue",
-            borderRadius: 15,
-            //marginHorizontal: 150,
-            marginTop: 20,
-            marginRight: 40,
-            width: 100,
-          }}
-        >
-          <Button title="Add" onPress={postdata} />
-        </View>
       </View>
-      <Text style={{ fontSize: 50, paddingBottom: 5, fontWeight: "bold" }}>
-        Danh Sách:
-      </Text>
+      <Text style={styles.ds}>Danh Sách:</Text>
       <View style={styles.vt}></View>
       <View style={styles.vitem}>
         {isLoading ? (
           <ActivityIndicator />
         ) : (
-          <ScrollView  
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
           >
-            {
-            //getData(),
-            datas.map((data) => (
+            {datas.map((data) => (
+              //<TodoItem key={data._id} _id = {data._id} name = {data.name} key = {data.key} imageUrl={data.imageUrl} checked={checked} />
               <TouchableOpacity
                 key={data._id}
                 onPress={() => {
-                  setLoading(true)
                   navigation.navigate("Edit", {
                     postID: data._id,
                     postTd: data.name,
@@ -159,6 +158,23 @@ export default function HomeScreen({ navigation, route }) {
                 }}
               >
                 <View style={styles.cntext}>
+                  <Switch
+                    trackColor={{ false: "#87ceeb", true: "#87ceeb" }}
+                    thumbColor={data.checked ? "#f8f8ff" : "#f8f8ff"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={() => {
+                      toggleSwitch(
+                        data._id,
+                        data.key,
+                        data.name,
+                        data.imageUrl,
+                        data.checked,
+                      );
+                      setLoading(true);
+                    }}
+                    value={data.checked}
+                    style={{ marginTop: 15 }}
+                  />
                   <View style={styles.tt}>
                     <Text style={styles.td}>Tiêu Đề: {data.name}</Text>
                     <Text style={styles.gc}>Ghi chú: {data.key}</Text>
@@ -168,7 +184,7 @@ export default function HomeScreen({ navigation, route }) {
                     <Button
                       title="Delete"
                       color="red"
-                      onPress={() => DeleteData(data._id)}
+                      onPress={() => deleteData(data._id)}
                     />
                   </View>
                 </View>
@@ -182,6 +198,28 @@ export default function HomeScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+  btCreate: {
+    backgroundColor: "skyblue",
+    borderRadius: 15,
+    marginHorizontal: 150,
+    marginTop: 20,
+    //marginLeft: 40,
+    width: 100,
+    marginBottom: 20,
+  },
+  bt: {
+    backgroundColor: "skyblue",
+    borderRadius: 15,
+    marginTop: 20,
+    marginRight: 40,
+    width: 100,
+  },
+  ds: {
+    fontSize: 50,
+    paddingBottom: 5,
+    fontWeight: "bold",
+    marginLeft: 20,
+  },
   boxInput: {
     padding: 5,
     borderRadius: 4,
@@ -206,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 10,
     //backgroundColor: "#d3d3d3",
-    width: 280,
+    width: 230,
   },
   td: {
     fontSize: 24,
@@ -226,60 +264,20 @@ const styles = StyleSheet.create({
   },
 });
 
-{
-  // React.useEffect(() => {
-  //   if (route.params?.post && route.params?.post1 && route.params?.date) {
-  //     // Post updated, do something with `route.params.post`
-  //     // For example, send the post to the server
-  //     // setTieude(route.params?.post);
-  //     // setGhichu(route.params?.post1);
-  //     // setDate(route.params?.date);
-  //     // console.log(todos)
-  //   }
-  // }, [route.params?.post, route.params?.post1, route.params?.hour]);
-  /* <FlatList
-          data= {todos}
-          renderItem={
-            ({item})=>(
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "column",
-                    borderRadius: 5,
-                    marginBottom: 10,
-                    marginHorizontal: 10,
-                    //backgroundColor: "#d3d3d3",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      paddingHorizontal: 8,
-                      marginBottom: 3,
-                    }}
-                  >
-                    Tiêu Đề: {item.td}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      paddingHorizontal: 10,
-                      marginBottom: 5,
-                    }}
-                  >
-                    Ghi chú: {item.gt}, Lúc: {item.date}
-                  </Text>
-                </View>
-                <View style={{ marginTop: 5, marginLeft: 5 }}>
-                  <Button title="Delete" color="red" />
-                </View>
-              </View>
-            )
-          }
-        /> */
-}
+// const addTodo = () => {
+//   id++;
+
+//   setTodos([
+//     ...todos,
+//     {
+//       key: id,
+//       td: route.params?.post,
+//       gt: route.params?.post1,
+//       date: route.params?.date,
+//     },
+//   ]);
+// };
+
+// const deleteTodo = (key) => {
+//   setTodos(todos.filter((todo) => todo.key !== key));
+// };

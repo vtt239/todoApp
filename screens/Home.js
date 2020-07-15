@@ -22,7 +22,7 @@ import { RadioButton } from "react-native-paper";
 let id = 0;
 
 export default function HomeScreen({ navigation, route }) {
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [datas, setData] = useState([]);
   const [todos, setTodos] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -67,7 +67,8 @@ export default function HomeScreen({ navigation, route }) {
     );
   };
 
-  const toggleSwitch1 = () => setChecked((previousState) => !previousState);
+  //if(isLoading!=false){}
+  //setLoading(route.params?.refesh);
 
   useEffect(() => {
     fetch("http://192.168.100.19:3000/list_all_foods") //192.168.100.19
@@ -119,6 +120,7 @@ export default function HomeScreen({ navigation, route }) {
       }),
     });
   };
+
   return (
     // eslint-disable-next-line react-native/no-inline-styles
     <View style={{ flex: 1 }}>
@@ -128,7 +130,6 @@ export default function HomeScreen({ navigation, route }) {
             title="Create"
             onPress={() => {
               navigation.navigate("DetailsScreen");
-              onRefresh();
             }}
           />
         </View>
@@ -145,7 +146,6 @@ export default function HomeScreen({ navigation, route }) {
             }
           >
             {datas.map((data) => (
-              //<TodoItem key={data._id} _id = {data._id} name = {data.name} key = {data.key} imageUrl={data.imageUrl} checked={checked} />
               <TouchableOpacity
                 key={data._id}
                 onPress={() => {

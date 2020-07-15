@@ -58,8 +58,6 @@ export default function Edit({ navigation, route }) {
     }
   }, [edit]);
 
-  //console.log(edit)
-
   const EditTodo = (id, tieude, ghichu, date) => {
     fetch("http://192.168.100.19:3000/update_a_food", {
       //192.168.100.19

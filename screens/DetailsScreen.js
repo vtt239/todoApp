@@ -54,7 +54,9 @@ export default function DetailsScreen({ navigation }) {
 
   useEffect(() => {
     if (add === true) {
-      navigation.navigate("HomeScreen");
+      navigation.navigate("HomeScreen",{
+        refesh: true
+      });
     }
   }, [add]);
 

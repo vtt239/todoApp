@@ -19,7 +19,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 let id = 0;
 
-export default function DetailsScreen({ navigation }) {
+export default function DetailsScreen({ navigation, route }) {
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(true);
@@ -54,14 +54,14 @@ export default function DetailsScreen({ navigation }) {
 
   useEffect(() => {
     if (add === true) {
-      navigation.navigate("HomeScreen",{
-        refesh: true
+      navigation.navigate("HomeScreen", {
+        refresh: true,
       });
     }
   }, [add]);
 
   const postData = () => {
-    fetch("http://192.168.100.19:3000/insert_new_foods", {
+    fetch("http://192.168.1.234:3000/insert_new_foods", {
       //192.168.100.19
       method: "POST",
       headers: {
@@ -74,6 +74,12 @@ export default function DetailsScreen({ navigation }) {
         imageUrl: formatDate(date),
       }),
     });
+    // .then(response => response.json())
+    //   .then(data => {
+    //     if(data.result === 'ok'){
+
+    //     }
+    //   });
     setghichu("");
     settieude("");
   };

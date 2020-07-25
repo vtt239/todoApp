@@ -1,5 +1,11 @@
 import "react-native-gesture-handler";
-import React, { Component, useState, useEffect, useMemo } from "react";
+import React, {
+  Component,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   Text,
   StyleSheet,
@@ -15,71 +21,38 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { TextInput, ScrollView } from "react-native-gesture-handler";
 import DateTimePicker from "@react-native-community/datetimepicker";
-//import CalendarPicker from 'react-native-calendar-picker';
 
 import { RadioButton } from "react-native-paper";
-
-let id = 0;
 
 export default function HomeScreen({ navigation, route }) {
   const [isLoading, setLoading] = useState(false);
   const [datas, setData] = useState([]);
-  const [todos, setTodos] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [checked, setChecked] = useState(false);
 
-  const TodoItem = (props) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          //setLoading(true);
-          navigation.navigate("Edit", {
-            postID: props._id,
-            postTd: props.name,
-            postGc: props.key,
-            postDate: props.imageUrl,
-          });
-        }}
-      >
-        <View style={styles.cntext}>
-          {/* <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={props.checked ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch1}
-            value={props.checked}
-            style={{ marginTop: 15 }}
-          /> */}
-          <View style={styles.tt}>
-            <Text style={styles.td}>Tiêu Đề: {props.name}</Text>
-            <Text style={styles.gc}>Ghi chú: {props.key}</Text>
-            <Text style={styles.gc}>Lúc: {props.imageUrl}</Text>
-          </View>
-          <View style={{ marginTop: 15, marginLeft: 5 }}>
-            <Button
-              title="Delete"
-              color="red"
-              onPress={() => deleteData(props._id)}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      //alert('Screen is focused');
+      setLoading(true)
+      // The screen is focused
+      // Call any action
+    });
 
-  //if(isLoading!=false){}
-  //setLoading(route.params?.refesh);
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
-    fetch("http://192.168.100.19:3000/list_all_foods") //192.168.100.19
+    fetch("http://192.168.1.234:3000/list_all_foods") //192.168.100.19
       .then((response) => response.json())
       .then((json) => setData(json.data))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, [isLoading]);
 
+  
+
   const deleteData = (id) => {
-    fetch("http://192.168.100.19:3000/delete_a_food", {
+    fetch("http://192.168.1.234:3000/delete_a_food", {
       //192.168.100.19
       method: "DELETE",
       headers: {
@@ -104,7 +77,7 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   const toggleSwitch = (id, ghichu, tieude, date, checked) => {
-    fetch("http://192.168.100.19:3000/update_a_food", {
+    fetch("http://192.168.1.234:3000/update_a_food", {
       //192.168.100.19
       method: "PUT",
       headers: {
@@ -168,7 +141,7 @@ export default function HomeScreen({ navigation, route }) {
                         data.key,
                         data.name,
                         data.imageUrl,
-                        data.checked,
+                        data.checked
                       );
                       setLoading(true);
                     }}

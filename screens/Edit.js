@@ -54,12 +54,12 @@ export default function Edit({ navigation, route }) {
 
   useEffect(() => {
     if (edit === true) {
-      navigation.navigate("HomeScreen", { refesh: true });
+      navigation.navigate("HomeScreen");
     }
   }, [edit]);
 
   const EditTodo = (id, tieude, ghichu, date) => {
-    fetch("http://192.168.100.19:3000/update_a_food", {
+    fetch("http://192.168.1.234:3000/update_a_food", {
       //192.168.100.19
       method: "PUT",
       headers: {
